@@ -35,6 +35,29 @@ const NotesClient = ({intialNotes}) => {
   }
 
 }
+
+const deleteNote = async (id) => {
+  try {
+    const response = await fetch(`/api/notes/${id}`, {
+      method: "DELETE",
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error);
+    }
+
+    setNotes((prevNotes) =>
+      prevNotes.filter((note) => note._id !== id)
+    );
+
+    toast.success("Note deleted successfully");
+  } catch (error) {
+    console.error(error);
+    toast.error(error.message);
+  }
+};
   return (
     <div className="space- y-6">
       <form onSubmit={createNote} className=' p-6 rounded-lg shadow-md'>
@@ -73,15 +96,17 @@ const NotesClient = ({intialNotes}) => {
                       <h3 className='text-lg font-semibold'>{note.title}</h3>
                       <div className='flex gap-2'>
                         <button className='text-shadow-blue-500 hover:text-blue-700 text-sm'>Edit</button>
-                        <button className='text-shadow-red-500 hover:text-red-700 text-sm'>Delete</button>
+                        <button className='text-shadow-red-500 hover:text-red-700 text-sm'
+                        onClick={()=>deleteNote(note._id)}
+                        >Delete</button>
                       </div>
                     </div>
                     <p  className='text-gray-700 mb-2'>{note.content}</p>
                     <p className='text-gray-500 text-sm'> 
-                    created:{new Date(note.createdAt).toLocaleDateString()}
+                    created:{new Date(note.createdAt).toLocaleDateString("en-IN")}
                     </p>
                     { note.updatedAt !== note.createdAt &&(<p className='text-gray-500 text-sm'> 
-                    created:{new Date(note.createdAt).toLocaleDateString()}
+                    created:{new Date(note.updatedAt).toLocaleDateString("en-IN")}
                     </p>)}
                   </div>
                 )))

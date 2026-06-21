@@ -1,23 +1,32 @@
-
 import dbConnect from "../../../../lib/db";
-
 import Note from "../../../../models/Note";
-import {NextResponse} from "next/server";
+import { NextResponse } from "next/server";
 
-export async function DELETE(request,{params}){
-    try {
-        const {id}= await params;
-        await dbConnect();
-        const note=await Note.findByIdAndDelete(id);
+export async function DELETE(request, { params }) {
+  try {
+    const { id } = await params; // <-- Important for Next.js 16
 
-        if(!note){
-            return NextResponse({success:false,error:"Note not found"},{status:404});
+    await dbConnect();
 
-        }
+    const note = await Note.findByIdAndDelete(id);
 
-        return NextResponse({success:true,data:{}})
-    } catch (error) {
-
-        return NextResponse({success:false,error:error.message},{status:400})
+    if (!note) {
+      return NextResponse.json(
+        { success: false, error: "Note not found" },
+        { status: 404 }
+      );
     }
+
+    return NextResponse.json(
+      { success: true },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
+  }
 }
